@@ -48,14 +48,3 @@ def recommend_books(book_idx, top_k=5):
     recommended_indices = same_cluster_indices[indices[0]]
 
     return recommended_indices, distances[0]
-
-
-# test
-
-if __name__ == "__main__":
-    book_idx = 0
-    recommended, distances = recommend_books(book_idx, top_k=5)
-
-    print(f"Query book index: {book_idx}")
-    print(f"Recommended book indices: {recommended}")
-    print(f"Cosine distances: {distances.round(3)}")
