@@ -18,7 +18,11 @@ export interface RecommendationResponse {
   recommendations: Book[];
 }
 
-const API_BASE_URL = 'http://localhost:8000';
+// For server-side (inside Docker), use the container name; for client-side, use localhost
+const isServer = typeof window === 'undefined';
+const API_BASE_URL = isServer
+  ? (process.env.API_URL_INTERNAL || 'http://backend:8000')
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000');
 
 export async function searchBooks(query: string, limit: number = 10): Promise<Book[]> {
   const response = await fetch(`${API_BASE_URL}/books/search?q=${encodeURIComponent(query)}&limit=${limit}`);

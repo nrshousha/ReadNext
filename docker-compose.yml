@@ -33,36 +33,34 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+
   # ---------------------------------------------------------------------------
-  # Frontend (Uncomment when ready)
+  # Frontend (Next.js - Netflix-Style UI)
   # ---------------------------------------------------------------------------
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: readnext-frontend
-  #   ports:
-  #     - "5173:5173"
-  #   depends_on:
-  #     backend:
-  #       condition: service_healthy
-  #   environment:
-  #     - VITE_API_URL=http://localhost:8000
   frontend:
     build:
-      context: ./frontend
+      context: ./frontend/readnext
       dockerfile: Dockerfile
     container_name: readnext-frontend
     ports:
-      - "5173:5173"
+      - "3000:3000"
+    volumes:
+      # Mount source code for live editing (hot reload)
+      - ./frontend/readnext:/app
+      # Preserve node_modules (don't overwrite with host's)
+      - /app/node_modules
+      - /app/.next
     environment:
-      - VITE_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - API_URL_INTERNAL=http://backend:8000
+      - WATCHPACK_POLLING=true
     depends_on:
       - backend
     restart: unless-stopped
-  # =============================================================================
-  # Networks (optional, for multi-service communication)
-  # =============================================================================
+
+# =============================================================================
+# Networks
+# =============================================================================
 networks:
   default:
     name: readnext-network
