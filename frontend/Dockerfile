@@ -1,22 +1,21 @@
-# Base image
-FROM node:18-alpine AS deps
+# ReadNext Frontend Dockerfile (Vite + React)
+# Development mode with hot reload
+
+FROM node:18-alpine
+
 WORKDIR /app
+
+# Copy package files
 COPY package.json package-lock.json* ./
+
+# Install dependencies
 RUN npm install
 
-# Production build
-FROM node:18-alpine AS builder
-WORKDIR /app
+# Copy source code
 COPY . .
-COPY --from=deps /app/node_modules ./node_modules
-RUN npm run build
 
-# Run the app
-FROM node:18-alpine AS runner
-WORKDIR /app
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-RUN npm install --omit=dev
-EXPOSE 3000
-CMD ["npm", "start"]
+# Expose Vite dev server port
+EXPOSE 5173
+
+# Run Vite dev server
+CMD ["npm", "run", "dev"]

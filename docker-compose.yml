@@ -49,21 +49,20 @@ services:
   #   environment:
   #     - VITE_API_URL=http://localhost:8000
   frontend:
-      build:
-        context: ./frontend
-        dockerfile: Dockerfile
-      container_name: frontend
-      ports:
-        - "3000:3000"
-      volumes:
-        - ./frontend:/app
-      restart: unless-stopped
-
-
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: readnext-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
   # =============================================================================
   # Networks (optional, for multi-service communication)
   # =============================================================================
 networks:
   default:
     name: readnext-network
-
