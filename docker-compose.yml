@@ -1,1 +1,57 @@
-# TODO: Define docker-compose services for backend, frontend, and ml
+# =============================================================================
+# ReadNext - Docker Compose Configuration
+# =============================================================================
+# This file orchestrates the ReadNext services
+#
+# Usage:
+#   docker compose up --build      # Build and start all services
+#   docker compose up -d           # Start in detached mode
+#   docker compose logs -f backend # Follow backend logs
+#   docker compose down            # Stop all services
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Backend API (FastAPI)
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: readnext-api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount ML data as read-only
+      - ./ml:/app/ml:ro
+    environment:
+      - ML_DATA_DIR=/app/ml
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+  # ---------------------------------------------------------------------------
+  # Frontend (Uncomment when ready)
+  # ---------------------------------------------------------------------------
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: readnext-frontend
+  #   ports:
+  #     - "5173:5173"
+  #   depends_on:
+  #     backend:
+  #       condition: service_healthy
+  #   environment:
+  #     - VITE_API_URL=http://localhost:8000
+
+  # =============================================================================
+  # Networks (optional, for multi-service communication)
+  # =============================================================================
+networks:
+  default:
+    name: readnext-network
